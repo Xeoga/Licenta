@@ -17,20 +17,24 @@ def insert_user(email, password):
     conn.close()
     print("Datele au fost salvate cu succes!")
 
-def login_user(email, password):
 
+def login_user(email, password):
+    print("Funcția login_user a fost apelată.")
+    print(f"Email primit: {email}, Parola primită: {password}")
+    
     # Conectează-te la baza de date
     conn = sqlite3.connect("users.db")
     cursor = conn.cursor()
     
-    # Verifică dacă există un utilizator cu emailul și parola furnizate
+    # Verifică utilizatorul
     cursor.execute("SELECT * FROM users WHERE email = ? AND password = ?", (email, password))
     user = cursor.fetchone()
+    print(f"Rezultatul interogării: {user}")
     
-    # Închide conexiunea la baza de date
+    # Închide conexiunea
     conn.close()
     
-    # Verifică rezultatul interogării
+    # Verifică rezultatul
     if user:
         print("Autentificare reușită!")
     else:

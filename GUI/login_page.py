@@ -165,10 +165,7 @@ def submit_login():
     password = Login_passwordName_entry.get()  # Preia textul din câmpul de parolă
 
     # Apelează login_user din database.py pentru autentificare
-    if login_user(email, password):
-        print("Autentificare reușită!")
-    else:
-        print("Email sau parolă incorectă!")
+    login_user(email, password)
 
 # =============== Submit Button ====================
 Login_button_image_1 = PhotoImage(
