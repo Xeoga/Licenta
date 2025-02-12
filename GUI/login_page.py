@@ -4,11 +4,14 @@ from database_sqlite import login_user
 
 window = Tk()
 
-height = 650
-width = 1240
+height = 800
+width = 1300
 x = (window.winfo_screenwidth() // 2) - (width // 2)
 y = (window.winfo_screenheight() // 4) - (height // 4)
 window.geometry('{}x{}+{}+{}'.format(width, height, x, y))
+
+window.overrideredirect(True)
+window.attributes("-transparentcolor", "#525561")
 
 window.configure(bg="#525561")
 
@@ -20,6 +23,8 @@ bg_imageLogin = Label(
     bg="#525561"
 )
 bg_imageLogin.place(x=120, y=28)
+
+
 
 # ================ Header Text Left ====================
 Login_headerText_image_left = PhotoImage(file="assets\\headerText_image.png")

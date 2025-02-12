@@ -1,6 +1,7 @@
 from tkinter import *
 import subprocess
-from database_sqlite import insert_user
+#from database_sqlite import insert_user
+from datebase_postgreSQL import insert_user
 
 window = Tk()
 
