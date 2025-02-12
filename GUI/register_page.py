@@ -1,6 +1,6 @@
 from tkinter import *
 import subprocess
-from database import insert_user
+from database_sqlite import insert_user
 
 window = Tk()
 
