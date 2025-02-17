@@ -1,30 +1,90 @@
-import PySimpleGUI as sg
 
-def on_button_click(action):
-    print(f"{action} clicked")
+from firstcalc import FirstCalc
+from secondcalc import SecondCalc
 
-# Define layout with styling to match the interface
-sg.theme("DarkGrey5")  # Set theme for a similar look
+from tvtk.pyface.scene_editor import SceneEditor
+from mayavi.tools.mlab_scene_model import MlabSceneModel
+from mayavi.core.ui.mayavi_scene import MayaviScene
 
-button_style = {"size": (12, 1), "pad": (2, 2), "button_color": ("black", "#f5f5f5")}
-header_style = {"size": (15, 1), "font": ("Arial", 10, "bold"), "pad": (2, 2), "button_color": ("black", "#d9d9d9")}
+from Common import *
 
-layout = [
-    [sg.Button("Dashboard", **header_style), sg.Button("Target", **header_style), sg.Button("Proxy", **header_style),
-     sg.Button("Intruder", **header_style), sg.Button("Repeater", **header_style), sg.Button("Sequencer", **header_style),
-     sg.Button("Decoder", **header_style), sg.Button("Comparer", **header_style), sg.Button("Extender", **header_style),
-     sg.Button("Project options", **header_style), sg.Button("User options", **header_style)],
-    [sg.Button("New Scan", **button_style), sg.Button("New Live Task", **button_style), sg.Text("Issue Activity", font=("Arial", 10, "bold"))]
-]
+class ApplicationMain(HasTraits):
 
-# Create window
-window = sg.Window("Custom Security Interface", layout, size=(900, 200), element_justification='left')
+    scene = Instance(MlabSceneModel, ())
+    
+    firstcalc = Instance(FirstCalc)
+    secondcalc = Instance(SecondCalc)
+    display = Instance(Figure)
+    markercolor = ColorTrait
+    markerstyle = Enum(['+',',','*','s','p','d','o'])
+    markersize = Range(0,10,2)
+ 
+    left_panel  = Tabbed(Group(VGroup(Item('display', editor=MPLFigureEditor(),show_label=False, resizable=True)),
+                               HGroup(Item(name='markercolor', label="Color", style="custom",springy=True),
+                                      Item(name='markerstyle', label="Marker",springy=True),
+                                      Item(name='markersize', label="Size",springy=True)), label='Display'),
+                               Item(name='scene',label='Mayavi',editor=SceneEditor(scene_class=MayaviScene)),show_labels=False)
 
-# Event loop
-while True:
-    event, values = window.read()
-    if event == sg.WIN_CLOSED:
-        break
-    on_button_click(event)
+    right_panel = Tabbed(Item('firstcalc', style='custom', label='First Tab',show_label=False),
+                         Item('secondcalc', style='custom', label='Second Tab',show_label=False))
+    
+    view = View(HSplit(left_panel,
+                 right_panel),
+                width = 1280,
+                height = 750,
+                resizable = True,
+                title="My First Python GUI Interface"
+            )
 
-window.close()
+    def _display_default(self):
+        """Initialises the display."""
+        figure = Figure()
+        ax = figure.add_subplot(111)
+        ax = figure.axes[0]
+        ax.set_xlabel('X')
+        ax.set_ylabel('Y')
+        ax.set_xlim(0,1)
+        ax.set_ylim(0,1)
+ 
+        # Set matplotlib canvas colour to be white
+        rect = figure.patch
+        rect.set_facecolor('w')
+        return figure
+
+    def _firstcalc_default(self):
+        # Initialize halos the way we want to.
+        # Pass a reference of main (e.g. self) downwards
+        return FirstCalc(self)
+
+    def _secondcalc_default(self):
+        # Initialize halos the way we want to.
+        # Pass a reference of main (e.g. self) downwards
+        return SecondCalc(self)
+
+    def _markercolor_changed(self):
+        ax = self.display.axes[0]
+        if hasattr(self, 'display_points'): 
+            self.display_points.set_color(self.markercolor)
+            self.display_points.set_markeredgecolor(self.markercolor)
+            wx.CallAfter(self.display.canvas.draw)
+
+    def _markerstyle_changed(self):
+        ax = self.display.axes[0]
+        if hasattr(self, 'display_points'): 
+            self.display_points.set_marker(self.markerstyle)
+            wx.CallAfter(self.display.canvas.draw)
+
+    def _markersize_changed(self):
+        ax = self.display.axes[0]
+        if hasattr(self, 'display_points'): 
+            self.display_points.set_markersize(self.markersize)
+            wx.CallAfter(self.display.canvas.draw)
+
+    def __init__(self, **kwargs):
+        self.markercolor = 'blue'
+        self.markersize = 2
+        self.markerstyle = 'o'
+
+if __name__ == '__main__':
+    app = ApplicationMain()
+    app.configure_traits()
