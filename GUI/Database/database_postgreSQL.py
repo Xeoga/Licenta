@@ -1,5 +1,7 @@
 import psycopg2
+import bcrypt
 import os
+import uuid
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -24,22 +26,37 @@ def get_connection():
     )
     return conn
 
+def hash_password(password):
+    """ Funcție pentru criptarea parolei folosind bcrypt """
+    salt = bcrypt.gensalt()
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
+    return hashed_password
+
 def insert_user(email, password):
     """Funcție de înregistrare a unui utilizator în baza de date."""
     conn = get_connection()
     cursor = conn.cursor()
 
-    # Creează tabela dacă nu există:
+# Creează tabela dacă nu există (folosind tipul UUID pentru id):
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS users (
-            id SERIAL PRIMARY KEY,
+            id UUID PRIMARY KEY,
             email VARCHAR(255) NOT NULL,
             password VARCHAR(255) NOT NULL
         )
     ''')
 
-    # Inserează datele
-    cursor.execute("INSERT INTO users (email, password) VALUES (%s, %s)", (email, password))
+    # Generează un UUID v4
+    user_id = str(uuid.uuid4())
+
+    # Criptează parola
+    hashed_password = hash_password(password)
+
+    # Inserează datele (ai grijă să transmiți user_id, email și password)
+    cursor.execute(
+        "INSERT INTO users (id, email, password) VALUES (%s, %s, %s)",
+        (user_id, email, hashed_password)
+    )
     conn.commit()
     
     cursor.close()

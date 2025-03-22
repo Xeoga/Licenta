@@ -1,7 +1,10 @@
 from tkinter import *
 import subprocess
+import sys
+import os
 #from database_sqlite import insert_user
-from datebase_postgreSQL import insert_user
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from Database.database_postgreSQL import insert_user
 
 window = Tk()
 
@@ -11,7 +14,10 @@ x = (window.winfo_screenwidth() // 2) - (width // 2)
 y = (window.winfo_screenheight() // 4) - (height // 4)
 window.geometry('{}x{}+{}+{}'.format(width, height, x, y))
 
+window.overrideredirect(True)
+window.attributes("-transparentcolor", "#525561")
 window.configure(bg="#525561")
+
 
 # ================Background Image ====================
 backgroundImage = PhotoImage(file="assets\\image_1.png")

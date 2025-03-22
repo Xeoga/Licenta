@@ -1,6 +1,9 @@
 from tkinter import *
 import subprocess
-from database_sqlite import login_user
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from Database.database_postgreSQL import login_user
 
 window = Tk()
 
@@ -74,7 +77,7 @@ loginText.place(x=75, y=187)
 
 def open_register_page():
     window.destroy()  # Închide fereastra principală
-    subprocess.Popen(["python", "register_page.py"])
+    subprocess.Popen(["python.exe", "register_page.py"])
 
 # ================ GO TO SIGN UP ====================
 switchSignup = Button(
