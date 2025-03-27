@@ -1,1 +1,5 @@
 GUI/.env
+GUI/ wordlists
+
+GUI/wordlists/
+GUI/bruteforce_cli/data/
