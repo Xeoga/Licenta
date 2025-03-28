@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox
+from wordlist_creator import launch_wordlist_creator
 import datetime
 import subprocess
 import threading
@@ -15,81 +16,107 @@ HASH_OPTIONS = [
     "bcrypt", "NTLM", "MySQL323", "MySQLSHA1", "WordPress", "Drupal7"
     ]
 
+ATTACK_OPTIONS = ["wordlist (direct)", "wordlist (RAM)", "bruteforce"]
+
 class HashSentinel:
     def __init__(self, parent):
         self.frame = tk.Frame(parent, bg="#272A37")
         self.frame.place(x=0, y=180, width=1060, height=560)
         self.frame.place_forget()
 
+        # Coloane pentru poziționare
+        col1_x = 40
+        col2_x = 370
+        col3_x = 700
         entry_width = 25
 
-        tk.Label(self.frame, text="Introduceți hash-ul:", font=("yu gothic ui", 12), bg="#272A37", fg="white").place(x=40, y=20)
+        # Wordlist buttons (pe un rând deasupra)
+        wordlist_y = 10
+        btn_width = 20
+        wordlist_frame = tk.Frame(self.frame, bg="#272A37")
+        wordlist_frame.place(x=col1_x, y=wordlist_y)
+
+        tk.Button(wordlist_frame, text="Selectează Wordlist", command=self.select_wordlist,
+                  font=("yu gothic ui bold", 11), bg="#3D404B", fg="white", relief=tk.FLAT,
+                  cursor="hand2", width=btn_width).pack(side=tk.LEFT, padx=5)
+
+        tk.Button(wordlist_frame, text="Încarcă Wordlist", command=self.browse_wordlist,
+                  font=("yu gothic ui bold", 11), bg="#3D404B", fg="white", relief=tk.FLAT,
+                  cursor="hand2", width=btn_width).pack(side=tk.LEFT, padx=5)
+
+        tk.Button(wordlist_frame, text="Creează Wordlist", command=launch_wordlist_creator,
+                font=("yu gothic ui bold", 11), bg="#3D404B", fg="white", relief=tk.FLAT,
+                cursor="hand2", width=btn_width).pack(side=tk.LEFT, padx=5)
+
+
+        # Etichete + Entry: Salt (prefix), Hash, Salt (sufix)
+        tk.Label(self.frame, text="Salt (înainte):", font=("yu gothic ui", 11), bg="#272A37", fg="white").place(x=col1_x, y=60)
+        self.salt_prefix_entry = tk.Entry(self.frame, font=("yu gothic ui", 12), width=entry_width)
+        self.salt_prefix_entry.place(x=col1_x, y=90)
+
+        tk.Label(self.frame, text="Hash:", font=("yu gothic ui", 11), bg="#272A37", fg="white").place(x=col2_x, y=60)
         self.hash_entry = tk.Entry(self.frame, font=("yu gothic ui", 12), width=entry_width)
-        self.hash_entry.place(x=40, y=50)
+        self.hash_entry.place(x=col2_x, y=90)
 
-        tk.Button(self.frame, text="Încarcă Wordlist", command=self.browse_wordlist,
-                font=("yu gothic ui bold", 11), bg="#3D404B", fg="white", relief=tk.FLAT, cursor="hand2").place(x=700, y=45, width=200, height=30)
-        tk.Button(self.frame, text="Selectează Wordlist", command=self.select_wordlist,
-                font=("yu gothic ui bold", 11), bg="#3D404B", fg="white", relief=tk.FLAT, cursor="hand2").place(x=700, y=10, width=200, height=30)
+        tk.Label(self.frame, text="Salt (după):", font=("yu gothic ui", 11), bg="#272A37", fg="white").place(x=col3_x, y=60)
+        self.salt_suffix_entry = tk.Entry(self.frame, font=("yu gothic ui", 12), width=entry_width)
+        self.salt_suffix_entry.place(x=col3_x, y=90)
 
-        self.wordlist_path = tk.StringVar()
-        self.wordlist_label = tk.Label(self.frame, textvariable=self.wordlist_path, font=("yu gothic ui", 10),
-                                       bg="#272A37", fg="white", wraplength=250, justify="left")
-        self.wordlist_label.place(x=700, y=80)
-
-
-
-        tk.Label(self.frame, text="Tip hash:", font=("yu gothic ui", 12), bg="#272A37", fg="white").place(x=40, y=110)
+        # Tip hash
+        tk.Label(self.frame, text="Tip hash:", font=("yu gothic ui", 12), bg="#272A37", fg="white").place(x=col1_x, y=140)
         self.hash_type = tk.StringVar(value="auto")
         self.hash_type_menu = tk.OptionMenu(self.frame, self.hash_type, *HASH_OPTIONS)
         self.hash_type_menu.config(bg="#3D404B", fg="white", font=("yu gothic ui", 12), width=entry_width)
         self.hash_type_menu["menu"].config(bg="#3D404B", fg="white")
-        self.hash_type_menu.place(x=40, y=140)
-        tk.Button(self.frame, text="🔍", command=self.detect_hash_type,
-          font=("yu gothic ui bold", 11), bg="#1D90F5", fg="white", relief=tk.FLAT, cursor="hand2"
-          ).place(x=300, y=140, width=50)
+        self.hash_type_menu.place(x=col1_x, y=170)
+
+        self.detect_button = tk.Button(self.frame, text="🔍", command=self.detect_hash_type,
+                                       font=("yu gothic ui bold", 12), bg="#1D90F5", fg="white",
+                                       relief="flat", cursor="hand2")
+        # self.frame.after(100, lambda: self.detect_button.place(x=col1_x + 220, y=170, width=35, height=35))
+
+        def place_detect_button_later():
+            self.frame.update_idletasks()
+            dropdown_x = self.hash_type_menu.winfo_x()
+            dropdown_y = self.hash_type_menu.winfo_y()
+            dropdown_w = self.hash_type_menu.winfo_width()
+            self.detect_button.place(x=dropdown_x + dropdown_w + 10, y=dropdown_y, width=35, height=35)
+
+        self.frame.after(100, place_detect_button_later)
 
 
-
-        tk.Label(self.frame, text="Tip atac:", font=("yu gothic ui", 12), bg="#272A37", fg="white").place(x=360, y=110)
-        self.attack_mode = tk.StringVar(value="wordlist")
-        self.attack_mode_menu = tk.OptionMenu(self.frame, self.attack_mode, "wordlist", "bruteforce")
+        # Tip atac
+        tk.Label(self.frame, text="Tip atac:", font=("yu gothic ui", 12), bg="#272A37", fg="white").place(x=col2_x, y=140)
+        self.attack_mode = tk.StringVar(value=ATTACK_OPTIONS[0])
+        self.attack_mode_menu = tk.OptionMenu(self.frame, self.attack_mode, *ATTACK_OPTIONS)
         self.attack_mode_menu.config(bg="#3D404B", fg="white", font=("yu gothic ui", 12), width=entry_width)
         self.attack_mode_menu["menu"].config(bg="#3D404B", fg="white")
-        self.attack_mode_menu.place(x=360, y=140)
+        self.attack_mode_menu.place(x=col2_x, y=170)
+        self.attack_mode.trace_add("write", self.update_ui_for_mode)
 
-        self.ram_mode = tk.BooleanVar(value=False)
-        self.ram_radiobuttons = []
-
-        tk.Label(self.frame, text="Mod acces wordlist:", font=("yu gothic ui", 12), bg="#272A37", fg="white").place(x=40, y=280)
-        rb1 = tk.Radiobutton(self.frame, text="Fișier direct", variable=self.ram_mode, value=False,
-                    bg="#272A37", fg="white", selectcolor="#272A37", font=("yu gothic ui", 11))
-        rb1.place(x=40, y=310)
-        rb2 = tk.Radiobutton(self.frame, text="În RAM (rapid)", variable=self.ram_mode, value=True,
-                    bg="#272A37", fg="white", selectcolor="#272A37", font=("yu gothic ui", 11))
-        rb2.place(x=180, y=310)
-        self.ram_radiobuttons.extend([rb1, rb2])
-
-
-        tk.Label(self.frame, text="Charset (brute-force):", font=("yu gothic ui", 12), bg="#272A37", fg="white").place(x=700, y=110)
-        self.charset_entry = tk.Entry(self.frame, font=("yu gothic ui", 12), width=entry_width)
-        self.charset_entry.insert(0, "abc123")
-        self.charset_entry.place(x=700, y=140)
-
-        tk.Label(self.frame, text="Lungime maximă:", font=("yu gothic ui", 12), bg="#272A37", fg="white").place(x=40, y=200)
-        self.maxlen_entry = tk.Entry(self.frame, font=("yu gothic ui", 12), width=entry_width)
-        self.maxlen_entry.insert(0, "4")
-        self.maxlen_entry.place(x=40, y=230)
-
-        tk.Label(self.frame, text="Threaduri:", font=("yu gothic ui", 12), bg="#272A37", fg="white").place(x=360, y=200)
+        # Threaduri
+        tk.Label(self.frame, text="Threaduri:", font=("yu gothic ui", 12), bg="#272A37", fg="white").place(x=col3_x, y=140)
         self.threads_entry = tk.Entry(self.frame, font=("yu gothic ui", 12), width=entry_width)
         self.threads_entry.insert(0, "4")
-        self.threads_entry.place(x=360, y=230)
+        self.threads_entry.place(x=col3_x, y=170)
 
+        # Lungime maximă
+        tk.Label(self.frame, text="Lungime maximă:", font=("yu gothic ui", 12), bg="#272A37", fg="white").place(x=col1_x, y=230)
+        self.maxlen_entry = tk.Entry(self.frame, font=("yu gothic ui", 12), width=entry_width)
+        self.maxlen_entry.insert(0, "4")
+        self.maxlen_entry.place(x=col1_x, y=260)
+
+        # Charset
+        tk.Label(self.frame, text="Charset (brute-force):", font=("yu gothic ui", 12), bg="#272A37", fg="white").place(x=col2_x, y=230)
+        self.charset_entry = tk.Entry(self.frame, font=("yu gothic ui", 12), width=entry_width)
+        self.charset_entry.insert(0, "abc123")
+        self.charset_entry.place(x=col2_x, y=260)
+
+        # Start Atac
         tk.Button(self.frame, text="Start Atac", command=self.start_attack,
-                  font=("yu gothic ui bold", 12), bg="#1D90F5", fg="white", relief="flat", cursor="hand2").place(x=700, y=230, width=200, height=40)
-        
-        self.attack_mode.trace_add("write", self.update_ui_for_mode)
+                  font=("yu gothic ui bold", 12), bg="#1D90F5", fg="white", relief="flat",
+                  cursor="hand2").place(x=col3_x, y=260, width=200, height=40)
+
         self.update_ui_for_mode()
 
     def browse_wordlist(self):
@@ -229,56 +256,67 @@ class HashSentinel:
     
     def update_ui_for_mode(self, *args):
         mode = self.attack_mode.get()
-        if mode == "wordlist":
-            self.charset_entry.config(state="disabled")
-            self.maxlen_entry.config(state="disabled")
-            for rb in self.ram_radiobuttons:
-                rb.config(state="normal")
-        else:  # bruteforce
+        if mode == "bruteforce":
             self.charset_entry.config(state="normal")
             self.maxlen_entry.config(state="normal")
-            for rb in self.ram_radiobuttons:
-                rb.config(state="disabled")
+        else:
+            self.charset_entry.config(state="disabled")
+            self.maxlen_entry.config(state="disabled")
+
 
     
     def start_attack(self):
         hash_value = self.hash_entry.get()
-        mode = self.attack_mode.get()
         hash_type = self.hash_type.get().lower()
         charset = self.charset_entry.get()
         maxlen = self.maxlen_entry.get()
         threads = self.threads_entry.get().strip()
+        salt_prefix = self.salt_prefix_entry.get().strip()
+        salt_suffix = self.salt_suffix_entry.get().strip()
         original_wordlist = self.wordlist_path.get()
+        attack_mode_ui = self.attack_mode.get()
 
-        if not original_wordlist or not os.path.exists(original_wordlist):
+        if "wordlist" in attack_mode_ui:
+            cli_mode = "wordlist"
+            use_ram = "RAM" in attack_mode_ui
+        elif "bruteforce" in attack_mode_ui:
+            cli_mode = "bruteforce"
+            use_ram = False
+        else:
+            messagebox.showerror("Eroare", "Mod invalid. Alege între: wordlist sau bruteforce")
+            return
+
+        if cli_mode == "wordlist" and (not original_wordlist or not os.path.exists(original_wordlist)):
             messagebox.showerror("Eroare", "Selectează un fișier wordlist valid.")
             return
 
-        # ✅ validare threads
         if not threads.isdigit() or int(threads) <= 0:
             messagebox.showerror("Eroare", "Introduceți un număr valid de threaduri (> 0).")
             return
-
-        os.makedirs("wordlists", exist_ok=True)
-        original_filename = os.path.basename(original_wordlist)
-        persistent_path = os.path.join("wordlists", original_filename)
-
-        if os.path.abspath(original_wordlist) != os.path.abspath(persistent_path):
-            shutil.copyfile(original_wordlist, persistent_path)
 
         args = [
             os.path.join(os.path.dirname(__file__), "bruteforce_cli.exe"),
             "--hash", hash_value,
             "--type", hash_type,
-            "--mode", mode,
-            "--threads", threads
+            "--mode", cli_mode,
+            "--threads", threads,
+            "--salt-prefix", salt_prefix,
+            "--salt-suffix", salt_suffix
         ]
 
-        if mode == "wordlist":
+        if cli_mode == "wordlist":
+            os.makedirs("wordlists", exist_ok=True)
+            original_filename = os.path.basename(original_wordlist)
+            persistent_path = os.path.join("wordlists", original_filename)
+
+            if os.path.abspath(original_wordlist) != os.path.abspath(persistent_path):
+                shutil.copyfile(original_wordlist, persistent_path)
+
             args.extend(["--file", persistent_path])
-            if self.ram_mode.get():
-                args.extend(["--ram"])
-        elif mode == "bruteforce":
+            if use_ram:
+                args.append("--ram")
+
+        elif cli_mode == "bruteforce":
             args.extend(["--charset", charset, "--max-len", maxlen])
 
         def run_golang():

@@ -18,6 +18,8 @@ func Execute() {
 	hashType := flag.String("type", "", "Tipul hashului: md5, sha1, sha256, sha512. Dacă nu e setat, se va detecta automat")
 	ram := flag.Bool("ram", false, "Încarcă wordlist-ul în RAM pentru viteză")
 	detectOnly := flag.Bool("detect-only", false, "Doar identifică tipul hashului")
+	saltPrefix := flag.String("salt-prefix", "", "Salt aplicat înainte de valoarea de test")
+	saltSuffix := flag.String("salt-suffix", "", "Salt aplicat după valoarea de test")
 
 	flag.Parse()
 
@@ -47,14 +49,14 @@ func Execute() {
 			return
 		}
 		if *ram {
-			result, count, seconds := engine.CrackFromWordlistInRAM(*hashInput, actualHashType, *file, *threads)
+			result, count, seconds := engine.CrackFromWordlistInRAM(*hashInput, actualHashType, *file, *threads, *saltPrefix, *saltSuffix)
 			if result != "" {
 				fmt.Printf("Parolă găsită (RAM): %s în %d încercări (%.2f secunde)\n", result, count, seconds)
 			} else {
 				fmt.Printf("Nicio potrivire găsită (RAM) după %d încercări (%.2f secunde)\n", count, seconds)
 			}
 		} else {
-			result, count, seconds := engine.CrackFromWordlist(*hashInput, actualHashType, *file, *threads)
+			result, count, seconds := engine.CrackFromWordlist(*hashInput, actualHashType, *file, *threads, *saltPrefix, *saltSuffix)
 			if result != "" {
 				fmt.Printf("Parolă găsită: %s în %d încercări (%.2f secunde)\n", result, count, seconds)
 			} else {
@@ -62,7 +64,7 @@ func Execute() {
 			}
 		}
 	case "bruteforce":
-		result, count, seconds := engine.CrackBruteForceParallel(*hashInput, actualHashType, *charset, *maxLen, *threads)
+		result, count, seconds := engine.CrackBruteForceParallel(*hashInput, actualHashType, *charset, *maxLen, *threads, *saltPrefix, *saltSuffix)
 		if result != "" {
 			fmt.Printf("Parolă găsită: %s în %d încercări (%.2f secunde)\n", result, count, seconds)
 		} else {

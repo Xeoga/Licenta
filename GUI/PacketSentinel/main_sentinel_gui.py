@@ -5,16 +5,13 @@ from packet_sentinel import PacketSentinel
 class TrafficAnalyzerGUI:
     def __init__(self, root):
         self.root = root
-        self.root.title("Sentinel Traffic Analyzer")
         self.root.configure(bg="#525561")
 
         width, height = 1300, 800
         x = (self.root.winfo_screenwidth() // 2) - (width // 2)
         y = (self.root.winfo_screenheight() // 4) - (height // 4)
         self.root.geometry(f"{width}x{height}+{x}+{y}")
-        # self.root.overrideredirect(True)
         self.root.attributes("-transparentcolor", "#525561")
-        # self.root.attributes("-topmost", False)
         self.root.lift()
         self.root.focus_force()
 
@@ -23,7 +20,8 @@ class TrafficAnalyzerGUI:
 
         # HEADER
         tk.Label(self.bg_frame, text="Sentinel", font=("yu gothic ui bold", 20), bg="#272A37", fg="white").place(x=30, y=30)
-        tk.Label(self.bg_frame, text="Traffic Analyzer", font=("yu gothic ui bold", 26), bg="#272A37", fg="white").place(x=30, y=75)
+        self.mode_title = tk.Label(self.bg_frame, text="Traffic Analyzer", font=("yu gothic ui bold", 26), bg="#272A37", fg="white")
+        self.mode_title.place(x=30, y=75)
 
         # TOP BUTTONS
         self.top_button_frame = tk.Frame(self.bg_frame, bg="#272A37")
@@ -39,7 +37,7 @@ class TrafficAnalyzerGUI:
                                      relief=tk.FLAT, cursor="hand2", width=15, command=self.show_hash_frame)
         self.hash_button.pack(side=tk.LEFT, padx=5)
 
-        # INIT MODULES
+        # ✅ Muta output_log aici sus!
         self.hash_sentinel = HashSentinel(self.bg_frame)
         self.packet_sentinel = PacketSentinel(self.bg_frame, self.output_log)
 
@@ -48,15 +46,17 @@ class TrafficAnalyzerGUI:
                  bg="#272A37", fg="#AAAAAA").place(x=800, y=710)
 
     def output_log(self, msg):
-        print(msg)  # sau scrii într-un log centralizat dacă vrei
+        print(msg)
 
     def show_packet_frame(self):
         self.hash_sentinel.hide()
         self.packet_sentinel.show()
+        self.mode_title.config(text="Traffic Analyzer")
 
     def show_hash_frame(self):
         self.packet_sentinel.hide()
         self.hash_sentinel.show()
+        self.mode_title.config(text="Hash Cracker")
 
 
 def main():

@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func CrackFromWordlist(hash, hashType, path string, threads int) (string, int, float64) {
+func CrackFromWordlist(hash, hashType, path string, threads int, saltPrefix, saltSuffix string) (string, int, float64) {
 	start := time.Now()
 
 	file, err := os.Open(path)
@@ -32,8 +32,9 @@ func CrackFromWordlist(hash, hashType, path string, threads int) (string, int, f
 		go func() {
 			defer wg.Done()
 			for word := range lines {
+				candidate := saltPrefix + word + saltSuffix
 				atomic.AddInt32(&attempts, 1)
-				if MatchHash(word, hashType, hash) {
+				if MatchHash(candidate, hashType, hash) {
 					select {
 					case results <- word:
 					default:
@@ -71,10 +72,9 @@ func CrackFromWordlist(hash, hashType, path string, threads int) (string, int, f
 	return found, int(atomic.LoadInt32(&attempts)), elapsed
 }
 
-func CrackFromWordlistInRAM(hash, hashType, path string, threads int) (string, int, float64) {
+func CrackFromWordlistInRAM(hash, hashType, path string, threads int, saltPrefix, saltSuffix string) (string, int, float64) {
 	start := time.Now()
 
-	// Deschide și încarcă tot wordlist-ul în memorie
 	file, err := os.Open(path)
 	if err != nil {
 		return "", 0, 0.0
@@ -89,7 +89,6 @@ func CrackFromWordlistInRAM(hash, hashType, path string, threads int) (string, i
 			allWords = append(allWords, line)
 		}
 	}
-
 	total := len(allWords)
 	if total == 0 {
 		return "", 0, 0.0
@@ -98,7 +97,6 @@ func CrackFromWordlistInRAM(hash, hashType, path string, threads int) (string, i
 		threads = 1
 	}
 
-	// Împarte în chunk-uri
 	chunkSize := (total + threads - 1) / threads
 	var result string
 	var found atomic.Bool
@@ -121,7 +119,8 @@ func CrackFromWordlistInRAM(hash, hashType, path string, threads int) (string, i
 					return
 				}
 				atomic.AddInt32(&tested, 1)
-				if MatchHash(word, hashType, hash) {
+				candidate := saltPrefix + word + saltSuffix
+				if MatchHash(candidate, hashType, hash) {
 					if found.CompareAndSwap(false, true) {
 						mu.Lock()
 						result = word
