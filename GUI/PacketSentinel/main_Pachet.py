@@ -4,6 +4,7 @@ from scapy.all import sniff, IP, TCP, UDP, get_if_list
 from scapy.utils import wrpcap
 import wmi
 import re
+import datetime
 
 class TrafficAnalyzerGUI:
     def __init__(self, root):
@@ -23,38 +24,47 @@ class TrafficAnalyzerGUI:
 
         # ================= HEADER ==================
         tk.Label(self.bg_frame, text="Sentinel", font=("yu gothic ui bold", 20), bg="#272A37", fg="white").place(x=30, y=30)
-        tk.Label(self.bg_frame, text="Traffic Analyzer", font=("yu gothic ui bold", 26), bg="#272A37", fg="white").place(x=30, y=75)
 
         # ================= TOP BUTTONS ==================
         self.top_button_frame = tk.Frame(self.bg_frame, bg="#272A37")
-        self.top_button_frame.place(x=30, y=130)
+        self.top_button_frame.place(x=30, y=75)
+
         # ================= PacketSentinel ===============
         self.packet_button = tk.Button(
             self.top_button_frame,
             text="PacketSentinel",
-            # command=self.open_wireshark, -> link pentru main_Packet.py
             font=("yu gothic ui", 12, "bold"),
             bg="#4A4A4A", fg="#FFFFFF",
             activebackground="#5A5A5A", activeforeground="#FFFFFF",
             relief=tk.FLAT, cursor="hand2", width=15
         )
         self.packet_button.pack(side=tk.LEFT, padx=5)
+
         # ================= HashSentinel ===============
         self.hash_button = tk.Button(
             self.top_button_frame,
             text="HashSentinel",
-            # command=self.open_wireshark, -> Aici trebuie de lincuit cu aplicati lui Adrian
             font=("yu gothic ui", 12, "bold"),
             bg="#4A4A4A", fg="#FFFFFF",
             activebackground="#5A5A5A", activeforeground="#FFFFFF",
             relief=tk.FLAT, cursor="hand2", width=15
         )
         self.hash_button.pack(side=tk.LEFT, padx=5)
-        # ================= HideDirectorySentinel ======
-        # ...
-        # ================= INTERFACE MENU (cu denumiri reale) ==================
+        self.dir_searh = tk.Button(
+            self.top_button_frame,
+            text="DirSentinel",
+            font=("yu gothic ui", 12, "bold"),
+            bg="#4A4A4A", fg="#FFFFFF",
+            activebackground="#5A5A5A", activeforeground="#FFFFFF",
+            relief=tk.FLAT, cursor="hand2", width=15
+        )
+        self.dir_searh.pack(side=tk.LEFT, padx=5)
+        # ✅ MUTAT AICI - sub butoane
+        tk.Label(self.bg_frame, text="Traffic Analyzer", font=("yu gothic ui bold", 26), bg="#272A37", fg="white").place(x=30, y=150)
+
+        # ================= INTERFACE MENU ==================
         tk.Label(self.bg_frame, text="Selectează interfața:", font=("yu gothic ui bold", 14),
-                 bg="#272A37", fg="white").place(x=30, y=190)
+                bg="#272A37", fg="white").place(x=30, y=220)
 
         raw_interfaces = get_if_list()
         c = wmi.WMI()
@@ -85,7 +95,6 @@ class TrafficAnalyzerGUI:
         self.interface_menu.config(bg="#3D404B", fg="white", font=("yu gothic ui", 12), width=30)
         self.interface_menu["menu"].config(bg="#3D404B", fg="white")
         self.interface_menu.place(x=30, y=220)
-
         # ================= CONTROL BUTTONS ==================
         self.start_button = tk.Button(self.bg_frame, text="Start Captură", command=self.start_sniffing,
                                       font=("yu gothic ui bold", 12),
@@ -150,23 +159,33 @@ class TrafficAnalyzerGUI:
         iface_display = self.selected_interface.get()
         iface_real = self.interface_map.get(iface_display, iface_display)
         sniff(iface=iface_real, prn=self.packet_callback, stop_filter=lambda x: self.stop_sniff)
-
+        
     def packet_callback(self, packet):
-        if IP in packet:
-            src_ip = packet[IP].src
-            dst_ip = packet[IP].dst
-            protocol = "TCP" if TCP in packet else "UDP" if UDP in packet else "UNKNOWN"
-            info = (
-                f"\n==============================\n"
-                f"📡 Pachet Capturat:\n"
-                f"🔹 Sursă: {src_ip}\n"
-                f"🔹 Destinație: {dst_ip}\n"
-                f"🔹 Protocol: {protocol}\n"
-                f"==============================\n"
-            )
-            self.output_text.insert(tk.END, info)
-            self.output_text.see(tk.END)
-            self.captured_packets.append(packet)
+        src_ip = packet[IP].src
+        dst_ip = packet[IP].dst
+        protocol = "TCP" if TCP in packet else "UDP" if UDP in packet else "UNKNOWN"
+        length = len(packet)
+        timestamp = datetime.datetime.now().strftime("%H:%M:%S.%f")[:-3]
+        info = ""
+
+        if TCP in packet:
+            sport = packet[TCP].sport
+            dport = packet[TCP].dport
+            info = f"{sport} → {dport} [TCP]"
+        elif UDP in packet:
+            sport = packet[UDP].sport
+            dport = packet[UDP].dport
+            info = f"{sport} → {dport} [UDP]"
+        else:
+            info = "Alt tip de pachet"
+
+        index = len(self.captured_packets) + 1
+
+        line = f"{index:<5} {timestamp:<15} {src_ip:<18} {dst_ip:<18} {protocol:<8} {length:<7} {info}\n"
+        
+        self.output_text.insert(tk.END, line)
+        self.output_text.see(tk.END)
+        self.captured_packets.append(packet)
 
     def save_pcap(self):
         if self.captured_packets:

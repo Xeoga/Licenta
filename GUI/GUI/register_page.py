@@ -2,6 +2,8 @@ from tkinter import *
 import subprocess
 import sys
 import os
+from tkinter import messagebox
+
 #from database_sqlite import insert_user
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from Database.database_postgreSQL import insert_user
@@ -68,7 +70,7 @@ text.place(x=75, y=187)
 
 def open_login_page():
     window.destroy()  # Închide fereastra principală
-    subprocess.Popen(["python", "login_page.py"])
+    subprocess.Popen(["python", "GUI/login_page.py"])
 
 
 # ================ GO TO LOGIN ====================
@@ -267,7 +269,14 @@ confirm_passwordName_entry.place(x=8, y=17, width=140, height=27)
 def submit_data():
     email = emailName_entry.get()
     password = passwordName_entry.get()
-    insert_user(email, password)  # Apelează funcția din database.py
+    firt_name = firstName_entry.get()
+    last_name = lastName_entry.get()
+    
+    try:
+        insert_user(email, password, firt_name, last_name)  # Funcția care face inserarea în baza de date
+        messagebox.showinfo("Succes", "Utilizatorul a fost adăugat cu succes!")
+    except Exception as e:
+        messagebox.showerror("Eroare", f"A apărut o eroare la înregistrare:\n{str(e)}")
 
 # =============== Submit Button ====================
 submit_buttonImage = PhotoImage(

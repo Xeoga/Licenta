@@ -2,6 +2,8 @@ from tkinter import *
 import subprocess
 import sys
 import os
+from tkinter import messagebox
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from Database.database_postgreSQL import login_user
 
@@ -77,7 +79,7 @@ loginText.place(x=75, y=187)
 
 def open_register_page():
     window.destroy()  # Închide fereastra principală
-    subprocess.Popen(["python.exe", "register_page.py"])
+    subprocess.Popen(["python.exe", "GUI/register_page.py"])
 
 # ================ GO TO SIGN UP ====================
 switchSignup = Button(
@@ -171,9 +173,13 @@ Login_passwordName_entry.place(x=8, y=17, width=354, height=27)
 def submit_login():
     email = Login_emailName_entry.get()  # Preia textul din câmpul de email
     password = Login_passwordName_entry.get()  # Preia textul din câmpul de parolă
-
     # Apelează login_user din database.py pentru autentificare
-    login_user(email, password)
+    if login_user(email, password):
+        messagebox.showinfo("Autentificare reușită", "Utilizatorul a fost autentificat cu succes.")
+        window.destroy()
+    else:
+        messagebox.showerror("Eroare", "Email sau parolă incorecte.")
+
 
 # =============== Submit Button ====================
 Login_button_image_1 = PhotoImage(
