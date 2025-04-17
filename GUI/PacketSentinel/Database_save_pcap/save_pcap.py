@@ -10,7 +10,6 @@ from uuid import UUID
 # Adăugăm calea pentru a importa baza de date
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from Database.database_postgreSQL import get_connection
-
 app = FastAPI()
 
 BASE_PCAP_DIR = "./server_storage/pcaps"
