@@ -1,0 +1,6 @@
+
+    export automat al capturilor,
+    sau adăugare de grafică frumoasă pentru rapoarte PDF 📊
+    bordura la grafic
+    modulul de filtre in fisier aparte
+    modulul unde sunt capturat pachetele modificat  

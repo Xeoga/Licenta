@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 import hashlib
 import subprocess
 import sys
+import json
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 load_dotenv()
 
@@ -78,15 +80,28 @@ def login_user(email, password):
     hashed_password = hash_password(password)
 
     # Caută utilizatorul după email și parolă hashuită
-    cursor.execute("SELECT * FROM users WHERE email = %s AND password = %s", (email, hashed_password))
+    cursor.execute("SELECT id, first_name FROM users WHERE email = %s AND password = %s", (email, hashed_password))
     user = cursor.fetchone()
-    conn.close()
 
     if user:
-        print("✅ Autentificare reușită!")
-        # Deschide fișierul main_Pachet.py
-        subprocess.Popen(["python", "PacketSentinel/main_Pachet.py"])
-        return True
+        user_uuid = user[0]
+        first_name = user[1]
+        # 🔽 Salvare într-un fișier JSON
+        session_data = {
+             "uuid": user_uuid,
+            "first_name": first_name,
+               "email": email
+            }
+        with open("user_session.json", "w") as f:
+             json.dump(session_data, f)
+        # 🔽 Pornește aplicația principală
+        subprocess.Popen(["python", "PacketSentinel/main.py"])
+
+        conn.close()
+        return user_uuid, first_name  # trimite UUID și prenumele
+
     else:
         print("❌ Email sau parolă incorecte.")
-        return False
+        conn.close()
+        return None, None
+
