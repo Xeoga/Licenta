@@ -1,6 +1,10 @@
 from scapy.all import sniff, wrpcap
 import datetime
 import re
+from collections import defaultdict
+from report_generate import ReportData
+
+
 class TrafficAnalyzerCore:
     def __init__(self):
         self.stop_sniff = False
@@ -8,6 +12,8 @@ class TrafficAnalyzerCore:
         self.tcp_count = 0
         self.udp_count = 0
         self.other_count = 0
+        self.report_data = ReportData()
+        self.report_data.connections = defaultdict(set)  # ✅ conexiuni unice
 
     def start_capture(self, iface, callback, bpf_filter=None):
         self.stop_sniff = False
@@ -15,15 +21,44 @@ class TrafficAnalyzerCore:
             iface=iface,
             prn=lambda pkt: self._handle_packet(pkt, callback),
             stop_filter=lambda x: self.stop_sniff,
-            filter=bpf_filter if bpf_filter else None  # Captură totală dacă nu e filtru
+            filter=bpf_filter if bpf_filter else None
         )
 
     def stop_capture(self):
         self.stop_sniff = True
+        self.finalize_report_data()
 
     def _handle_packet(self, packet, callback):
         self.captured_packets.append(packet)
         callback(self.format_packet(packet))
+
+        now = datetime.datetime.now()
+        if not self.report_data.start_time:
+            self.report_data.start_time = now
+        self.report_data.end_time = now
+        self.report_data.total_packets += 1
+
+        if packet.haslayer("IP"):
+            src_ip = packet["IP"].src
+            dst_ip = packet["IP"].dst
+
+            self.report_data.sources[src_ip] += 1
+            self.report_data.destinations[dst_ip] += 1
+
+            if src_ip != dst_ip:
+                self.report_data.connections[src_ip].add(dst_ip)  # ✅ conexiune unică
+
+            proto = self.detect_application_protocol(packet)
+            self.report_data.protocols[proto] += 1
+
+        elif packet.haslayer("ARP"):
+            self.report_data.protocols["ARP"] += 1
+
+        elif packet.haslayer("ICMP"):
+            self.report_data.protocols["ICMP"] += 1
+
+        minute_key = now.strftime("%H:%M")
+        self.report_data.packets_per_minute[minute_key] += 1
 
     def format_packet(self, packet):
         try:
@@ -34,7 +69,7 @@ class TrafficAnalyzerCore:
             if packet.haslayer("IP"):
                 src_ip = packet["IP"].src
                 dst_ip = packet["IP"].dst
-                protocol = "TCP" if packet.haslayer("TCP") else "UDP" if packet.haslayer("UDP") else f"IP-{packet['IP'].proto}"
+                protocol = self.detect_application_protocol(packet)
                 info = ""
 
                 if packet.haslayer("TCP"):
@@ -69,20 +104,64 @@ class TrafficAnalyzerCore:
         except Exception as e:
             return f"[Eroare la parsare: {e}]\n"
 
-    def save_pcap(self, filename="captura_trafic.pcap"):
-        wrpcap(filename, self.captured_packets)
-        
-    def classify_and_count(self, packet_summary):
-        if "TCP" in packet_summary:
+    def detect_application_protocol(self, packet):
+        try:
+            port_map = {
+                80: "HTTP", 443: "HTTPS", 21: "FTP", 22: "SSH", 23: "TELNET",
+                25: "SMTP", 53: "DNS", 110: "POP3", 143: "IMAP", 445: "SMB",
+                3306: "MySQL", 3389: "RDP", 69: "TFTP", 161: "SNMP", 123: "NTP"
+            }
+
+            if packet.haslayer("TCP") or packet.haslayer("UDP"):
+                sport = packet.sport
+                dport = packet.dport
+                for port in [sport, dport]:
+                    if port in port_map:
+                        return port_map[port]
+
+            if packet.haslayer("Raw"):
+                payload = packet["Raw"].load.decode(errors="ignore").lower()
+                if "http" in payload or "host:" in payload:
+                    return "HTTP"
+                elif "ssh" in payload:
+                    return "SSH"
+                elif "ftp" in payload and "220" in payload:
+                    return "FTP"
+                elif "smtp" in payload or "mail from" in payload:
+                    return "SMTP"
+                elif "user" in payload and "pass" in payload:
+                    return "POP3/IMAP"
+                elif "get" in payload or "post" in payload:
+                    return "HTTP"
+                elif "dns" in payload:
+                    return "DNS"
+
+            return "Unknown"
+        except:
+            return "Error"
+
+    def save_pcap(self, custom_path="captura_trafic.pcap"):
+        wrpcap(custom_path, self.captured_packets)
+
+    def classify_and_count(self, packet):
+        proto = self.detect_application_protocol(packet)
+
+        if proto == "HTTP":
             self.tcp_count += 1
-        elif "UDP" in packet_summary:
-            self.udp_count += 1
-        elif "ICMP" in packet_summary:
-            self.icmp_count = getattr(self, "icmp_count", 0) + 1
-        elif "ARP" in packet_summary:
-            self.arp_count = getattr(self, "arp_count", 0) + 1
-        elif "DNS" in packet_summary:
+        elif proto == "HTTPS":
+            self.tcp_count += 1
+        elif proto == "DNS":
             self.dns_count = getattr(self, "dns_count", 0) + 1
+        elif proto == "ICMP":
+            self.icmp_count = getattr(self, "icmp_count", 0) + 1
+        elif proto == "ARP":
+            self.arp_count = getattr(self, "arp_count", 0) + 1
+        elif proto in ["FTP", "SSH", "TELNET", "SMTP", "POP3", "IMAP", "SMB", "MySQL", "RDP", "TFTP", "SNMP", "NTP"]:
+            self.other_count += 1
+        elif proto == "TCP":
+            self.tcp_count += 1
+        elif proto == "UDP":
+            self.udp_count += 1
         else:
             self.other_count += 1
 
@@ -92,16 +171,12 @@ class TrafficAnalyzerCore:
                 file.write(str(packet) + "\n")
 
     def get_protocol_counts_and_reset(self):
-        counts = {
-            "TCP": self.tcp_count,
-            "UDP": self.udp_count,
-            "ICMP": getattr(self, "icmp_count", 0),
-            "ARP": getattr(self, "arp_count", 0),
-            "DNS": getattr(self, "dns_count", 0),
-            "Other": self.other_count
-        }
-
-        self.tcp_count = self.udp_count = self.other_count = 0
-        self.icmp_count = self.arp_count = self.dns_count = 0
-
+        counts = dict(self.report_data.protocols)
+        self.report_data.protocols.clear()
         return counts
+
+    def finalize_report_data(self):
+        # ✅ Transformă set() în listă pentru compatibilitate cu DiscoveryView
+        self.report_data.connections = {
+            src: list(dsts) for src, dsts in self.report_data.connections.items()
+        }
