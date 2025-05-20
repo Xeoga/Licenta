@@ -98868,5 +98868,325 @@
     "timestamp": "2025-05-12 17:19:51",
     "level": "WARN",
     "message": "Posibil UDP flood de la 173.194.1.10"
+  },
+  {
+    "timestamp": "2025-05-12 22:12:15",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.3"
+  },
+  {
+    "timestamp": "2025-05-12 22:12:16",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.3"
+  },
+  {
+    "timestamp": "2025-05-12 22:12:26",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.3"
+  },
+  {
+    "timestamp": "2025-05-12 22:12:26",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.3"
+  },
+  {
+    "timestamp": "2025-05-12 22:12:26",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.1"
+  },
+  {
+    "timestamp": "2025-05-12 22:12:27",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.3"
+  },
+  {
+    "timestamp": "2025-05-12 22:12:27",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.1"
+  },
+  {
+    "timestamp": "2025-05-12 22:12:27",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.1"
+  },
+  {
+    "timestamp": "2025-05-12 22:12:27",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.3"
+  },
+  {
+    "timestamp": "2025-05-12 22:12:27",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.3"
+  },
+  {
+    "timestamp": "2025-05-12 22:12:28",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.1"
+  },
+  {
+    "timestamp": "2025-05-12 22:12:28",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.1"
+  },
+  {
+    "timestamp": "2025-05-12 22:17:52",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.3"
+  },
+  {
+    "timestamp": "2025-05-12 22:17:53",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.3"
+  },
+  {
+    "timestamp": "2025-05-12 22:17:53",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.3"
+  },
+  {
+    "timestamp": "2025-05-12 22:17:53",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.1"
+  },
+  {
+    "timestamp": "2025-05-12 22:18:01",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.3"
+  },
+  {
+    "timestamp": "2025-05-12 22:18:02",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.3"
+  },
+  {
+    "timestamp": "2025-05-12 22:18:02",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.1"
+  },
+  {
+    "timestamp": "2025-05-12 22:18:02",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.1"
+  },
+  {
+    "timestamp": "2025-05-12 22:18:04",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.3"
+  },
+  {
+    "timestamp": "2025-05-12 22:18:04",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.3"
+  },
+  {
+    "timestamp": "2025-05-12 22:18:06",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.3"
+  },
+  {
+    "timestamp": "2025-05-12 22:18:06",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.1"
+  },
+  {
+    "timestamp": "2025-05-12 22:18:06",
+    "level": "WARN",
+    "message": "Posibil UDP flood de la 192.168.1.1"
+  },
+  {
+    "timestamp": "2025-05-12 22:21:43",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.3"
+  },
+  {
+    "timestamp": "2025-05-12 22:21:43",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.3"
+  },
+  {
+    "timestamp": "2025-05-12 22:21:43",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.3"
+  },
+  {
+    "timestamp": "2025-05-12 22:21:43",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.3"
+  },
+  {
+    "timestamp": "2025-05-12 22:21:43",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.3"
+  },
+  {
+    "timestamp": "2025-05-12 22:21:44",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.3"
+  },
+  {
+    "timestamp": "2025-05-12 22:21:44",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.1"
+  },
+  {
+    "timestamp": "2025-05-12 22:21:44",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.1"
+  },
+  {
+    "timestamp": "2025-05-12 22:21:44",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.3"
+  },
+  {
+    "timestamp": "2025-05-12 22:21:44",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.3"
+  },
+  {
+    "timestamp": "2025-05-12 22:21:44",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.1"
+  },
+  {
+    "timestamp": "2025-05-12 22:21:45",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.1"
+  },
+  {
+    "timestamp": "2025-05-12 22:22:41",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.3"
+  },
+  {
+    "timestamp": "2025-05-12 22:22:41",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.1"
+  },
+  {
+    "timestamp": "2025-05-12 22:22:41",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.3"
+  },
+  {
+    "timestamp": "2025-05-12 22:22:41",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.1"
+  },
+  {
+    "timestamp": "2025-05-12 22:22:41",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.3"
+  },
+  {
+    "timestamp": "2025-05-12 22:22:41",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.1"
+  },
+  {
+    "timestamp": "2025-05-12 22:22:42",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.3"
+  },
+  {
+    "timestamp": "2025-05-12 22:22:42",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.3"
+  },
+  {
+    "timestamp": "2025-05-12 22:22:42",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.1"
+  },
+  {
+    "timestamp": "2025-05-12 22:22:42",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.3"
+  },
+  {
+    "timestamp": "2025-05-12 22:22:42",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.1"
+  },
+  {
+    "timestamp": "2025-05-12 22:22:43",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.3"
+  },
+  {
+    "timestamp": "2025-05-12 22:22:43",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.1"
+  },
+  {
+    "timestamp": "2025-05-12 22:22:43",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.3"
+  },
+  {
+    "timestamp": "2025-05-12 22:22:43",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.3"
+  },
+  {
+    "timestamp": "2025-05-12 22:22:43",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.1"
+  },
+  {
+    "timestamp": "2025-05-12 22:22:44",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.1"
+  },
+  {
+    "timestamp": "2025-05-12 22:22:44",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.3"
+  },
+  {
+    "timestamp": "2025-05-12 22:22:44",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.1"
+  },
+  {
+    "timestamp": "2025-05-12 22:22:44",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.3"
+  },
+  {
+    "timestamp": "2025-05-12 22:22:44",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.3"
+  },
+  {
+    "timestamp": "2025-05-12 22:26:38",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.3"
+  },
+  {
+    "timestamp": "2025-05-12 22:26:38",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.3"
+  },
+  {
+    "timestamp": "2025-05-12 22:26:38",
+    "level": "WARN",
+    "message": "Posibil UDP flood de la 192.168.1.1"
+  },
+  {
+    "timestamp": "2025-05-12 22:26:39",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.3"
+  },
+  {
+    "timestamp": "2025-05-12 22:26:39",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.3"
+  },
+  {
+    "timestamp": "2025-05-12 22:26:39",
+    "level": "WARN",
+    "message": "DNS flood suspect de la 192.168.1.1"
   }
 ]
