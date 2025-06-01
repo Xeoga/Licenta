@@ -280,8 +280,9 @@ class TrafficAnalyzerGUI:
             with open(temp_path, "rb") as file:
                 files = {"file": (os.path.basename(temp_path), file, "application/octet-stream")}
                 data = {"uuid": user_uuid}
-                response = requests.post("http://192.168.1.20:8000/upload_pcap/", data=data, files=files)
-
+                response = requests.post("http://92.115.212.74:8000/upload_pcap/", data=data, files=files)
+                #remote host is http://92.115.212.74:8000/upload_pcap/
+                #local host  is http://192.168.1.20:8000/upload_pcap/
             if response.status_code == 200:
                 self.packet_display.write("✅ Fișierul a fost salvat în baza de date cu succes.\n")
             else:
@@ -332,7 +333,7 @@ class TrafficAnalyzerGUI:
             return
 
         try:
-            response = requests.get(f"http://192.168.1.20:8000/list_pcaps/{user_uuid}")
+            response = requests.get(f"http://92.115.212.74:8000/list_pcaps/{user_uuid}")
             if response.status_code == 200:
                 pcap_list = response.json()
                 self.show_pcap_selection(pcap_list)
@@ -407,7 +408,7 @@ class TrafficAnalyzerGUI:
     def download_and_load_pcap(self, remote_path):
         try:
             # API de tip download direct (asigură-te că îl ai definit în FastAPI!)
-            url = f"http://192.168.1.20:8000/download_pcap?path={remote_path}"
+            url = f"http://92.115.212.74:8000/download_pcap?path={remote_path}"
             response = requests.get(url)
 
             if response.status_code == 200:

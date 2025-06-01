@@ -1,6 +1,16 @@
-1. Host discovery nu lucreaza(patch)
-2. Modificat partea unde sunt aratate pachetele.(Adaugarea comentarilor)
-3. Customoze la graficul din GUI principal.
-4. Salvarea la pachetele alese de exemplu de la pachetul 10 pana la 100.
-5. Gasirea pachetului care a generat alerta.(find numarul la pachet)
-    
+1. Host discovery nu lucreaza(patch)(DONE)
+2. Modificat partea unde sunt aratate pachetele.(Adaugarea comentarilor)(DONE)
+    2.1. Nu lucreaza butonul de follow la fluxul de pachete.(DONE)    
+3. Customoze la graficul din GUI principal.(DONE acum utilizatorul alege protocoalele dorite)
+10. Generarea de raport nu lucreaza correct(graficele nu sunt correcte generate)(DONE)
+12. Folow ca sa vedem datele transmise nu lucreaza(aceasta functie trebui adaugata anume la follow) :(
+4. Salvarea la pachetele alese de exemplu de la pachetul 10 pana la 100.(Elaborarea dupa ce follow)(DONE doar la fluxul de pachete)
+6. Loguri sunt foarte multe și fac spam(trebuie de verificat partea care genereaza alertele)(DONE adauga un filtru)
+
+
+5. Gasirea pachetului care a generat alerta.(find numarul la pachet)(TODO)
+13. Trebuie de verificat filtru cum acesta lucreaza(TODO)
+8. Adaugarea functionari de IPD/IPS(blockare trafic, domeni, adrese IP)
+
+7. Butoanele trebuie adaugate sus(like wireshark)
+11. Structura codului este încurcată
